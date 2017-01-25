@@ -1,3 +1,18 @@
+# Session class for combining different timelapse objects
+# this will be called when a timelapse commences
+class Session(object):
+    def __init__(self):
+        self.session = []
+
+    def add(self, mode):
+        pass
+
+# a parent class for the different time lapse modes
+class Segment(object):
+    def __init__(self, mode):
+        self.mode = mode
+
+
 # Bulb ramping mode
 # Investigate the point at which the shutter should be changed from a default
 # shutter speed to bulb mode. ISO ramping also needs to be achievable.
@@ -12,8 +27,9 @@ class Bramp(object):
         self.shotObj = None
         self.buildShots()
 
-    def buildShots(self):
+    def buildShotObj(self):
         # make sure we're building a valid shot list
+        # probably not necessary to check at all; prevent conflicts from being passed through at the UI stage
         if self.exln_end > self.interval:
             # this could be overcome with automatic ISO changes (a limit must be set though)
             raise ValueError("Maximum exposure time cannot exceed shot interval time.")
@@ -26,7 +42,7 @@ class Bramp(object):
         exposures = [self.exln_start] + [round(self.exln_start + (n * ramp_int), 2) for n in range(1, frames)]
         self.shotObj = exposures
 
-    def returnShotObj(self):
+    def shotObj(self):
         self.buildShots()
         return self.shotObj
 
@@ -37,6 +53,21 @@ class Bramp(object):
 
 
 # Steady shot mode
+class Steady(object):
+    def __init__(self, shot_mode, exp_len, interval, n_shots):
+        self.shot_mode = shot_mode
+        self.exp_len = exp_len
+        self.interval = interval
+        self.n_shots = n_shots
+        delf.shotObj = None
+
+    def buildShotObj(self):
+        pass
+
+
+
+
+
 
 # HDR mode - compatible with other modes?
 # maybe a subset option of shutter mode steady shot?
