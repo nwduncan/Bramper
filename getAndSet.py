@@ -31,7 +31,8 @@ def shutterSpeedOptions(display=True):
         except ValueError:
             continue
 
-def shutterSpeedSet():
-    shutter_speed = shutterSpeedOptions()
+def shutterSpeedSet(shutter_speed=False):
+    if not shutter_speed:
+        shutter_speed = shutterSpeedOptions()
     to_call = 'gphoto2 --set-config shutterspeed2={}'.format(shutter_speed)
     subprocess.call(to_call, shell=True)
