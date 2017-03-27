@@ -21,7 +21,7 @@ class Bramp(object):
 
     def buildShotObj(self):
 
-        # round total number of shots and determine total frame count
+        # determine total frame count
         tot, rem = divmod(self.bramp_length, self.interval)
         frames = int(tot) if rem <= self.interval/2 else int(tot) + 1
 
@@ -42,7 +42,7 @@ class Bramp(object):
 
         # list of ramp intervals
         # [shot number, elapsed time, exposure length (adjusted)]
-        exposures = [[1, 0, start_exposure, start_exposure]]
+        exposures = [[1, 0, start_exposure]]
         cur_exposure = start_exposure + ramp_int
 
         # build the shot details
