@@ -2,6 +2,13 @@ from __future__ import print_function
 import subprocess
 from subprocess import Popen, PIPE
 
+
+def setTargetCard():
+    # set download location to be memory card
+    # do not use sudo
+    subprocess.call("gphoto2 --set-config-value /main/settings/capturetarget=1", shell=True)
+    subprocess.call("gphoto2 --set-config capturetarget=\"Memory card\"", shell=True)
+
 def shutterSpeedGet():
     child = Popen(["gphoto2", "--get-config=shutterspeed2"], stdout=PIPE)
     results = child.communicate()[0].split("\n")

@@ -4,9 +4,9 @@
 from __future__ import print_function
 import subprocess
 from subprocess import Popen, PIPE
-import cameraOptions
+import cameraSettings
 
-shutter_speeds, choices = cameraOptions.shutterDict()
+shutter_speeds, choices = cameraSettings.shutterDict()
 
 # this function will currently only work with shutter speed. this can easily
 # be mopdified to adjust ISO as well, although this may not be necessary
@@ -23,7 +23,7 @@ def hdr(shot_num, stops):
              3: 9,
              4: 12}
 
-    cur_spd = cameraOptions.shutterSpeedGet()
+    cur_spd = cameraSettings.shutterSpeedGet()
     for k, v in shutter_speeds.items():
         if v == cur_spd:
             cur_opt = k
@@ -34,5 +34,7 @@ def hdr(shot_num, stops):
     for ev in ev_adjust:
         set_speed = shutter_speeds[cur_opt+ev]
         print(set_speed)
-        cameraOptions.shutterSpeedSet(set_speed)
+        cameraSettings.shutterSpeedSet(set_speed)
         subprocess.call('gphoto2 --capture-image', shell=True)
+
+    cameraSettings.shutterSpeedSet(cur_spd)
