@@ -70,12 +70,12 @@ class Bramp(object):
                 shot_dict[i] = ['bulb', round(cur_exposure, 1)]
                 cur_exposure+=ramp_int
 
-        self.shot_details = exposures
+        self.shot_details = shot_dict
 
 
     def captureImage(self, seq_num):
 
-        shot_settings = self.shot_list[seq_num]
+        shot_settings = self.shot_details[seq_num]
 
         if shot_settings[0] == 'preset':
             shutter_speed = shot_settings[1]
@@ -123,7 +123,7 @@ class Steady(object):
         self.exp_len = exp_len
         self.interval = interval
         self.n_shots = n_shots
-        delf.shotList = None
+        self.shot_list = None
 
     def buildShotList(self):
         pass
