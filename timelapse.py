@@ -83,13 +83,13 @@ class Bramp(object):
             cameraSettings.shutterSpeedSet(shutter_speed)
             # capture image
             sub_p = 'gphoto2 --capture-image'
-            subprocess.call(sub_p, shell=True)
+            # subprocess.call(sub_p, shell=True)
 
         else:
             shutter_speed = shot_settings[1]
             # capture image
             sub_p = 'gphoto2 --capture-image --bulb='+str(shutter_speed)
-            subprocess.call(sub_p, shell=True)
+            # subprocess.call(sub_p, shell=True)
 
 
     def __str__(self):
