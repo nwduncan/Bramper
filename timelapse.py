@@ -83,13 +83,13 @@ class Bramp(object):
             cameraSettings.shutterSpeedSet(shutter_speed)
             # capture image
             sub_p = 'gphoto2 --capture-image'
-            # subprocess.call(sub_p, shell=True)
+            subprocess.call(sub_p, shell=True)
 
         else:
             shutter_speed = shot_settings[1]
             # capture image
             sub_p = 'gphoto2 --capture-image --bulb='+str(shutter_speed)
-            # subprocess.call(sub_p, shell=True)
+            subprocess.call(sub_p, shell=True)
 
 
     def __str__(self):
@@ -98,17 +98,24 @@ class Bramp(object):
         return self.shot_list
 
 
-# here be unused classes
 
-# Session class for combining different timelapse objects
-# this will be called when a timelapse commences
+# Session class for combining multiple instances of timelapse objects
 class Session(object):
+
     def __init__(self):
         self.session = []
 
-    def add(self, mode):
-        pass
+    def add(self, tl_object, order=False):
+        if not order:
+            self.session.append(tl_object)
+        else:
+            self.session.insert(order, tl_object)
 
+
+
+##############################
+### here be unused classes ###
+##############################
 
 # a parent class for the different time lapse modes
 class Segment(object):
