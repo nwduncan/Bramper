@@ -3,6 +3,7 @@ import subprocess
 #from subprocess import Popen, PIPE
 import cameraSettings
 from fractions import Fraction
+from threading import Timer
 
 # Bulb ramping mode
 # Investigate the point at which the shutter should be changed from a default
@@ -99,38 +100,31 @@ class Bramp(object):
 
 
 
-# Session class for combining multiple instances of timelapse objects
-class Session(object):
+# timelapse management class
+class Timelapse(object):
 
-    def __init__(self):
+    def __int__(self):
         self.session = []
 
+    # establish/modify the timelapse order sequence
     def add(self, tl_object, order=False):
         if not order:
             self.session.append(tl_object)
         else:
             self.session.insert(order, tl_object)
 
+    # method for defining when to begin the timelapse
+    # options should include:
+    #   - starting at the start/end/seq_num of a section - this will alow a bulb ramp to be
+    #   concluded/begun at a specific time (sunrise, sunset etc)
+    #   - instantly (button press, user input)
+    def defineStart(self):
+        pass
 
+    # this needs to take control over the entire timelapse process
+    # must call each shot in order and at the right time; investigate threading.Timer method
+    def start(self):
+        pass
 
-##############################
-### here be unused classes ###
-##############################
-
-# a parent class for the different time lapse modes
-class Segment(object):
-    def __init__(self, mode):
-        self.mode = mode
-
-
-# Steady shot mode
-class Steady(object):
-    def __init__(self, shot_mode, exp_len, interval, n_shots):
-        self.shot_mode = shot_mode
-        self.exp_len = exp_len
-        self.interval = interval
-        self.n_shots = n_shots
-        self.shot_list = None
-
-    def buildShotList(self):
+    def stop(self):
         pass
