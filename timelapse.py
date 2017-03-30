@@ -122,6 +122,8 @@ class Timelapse(object):
     #   - starting at the start/end/seq_num of a section - this will alow a bulb ramp to be
     #   concluded/begun at a specific time (sunrise, sunset, moon rise etc)
     #   - instantly (button press, user input)
+    # set this up with another threading.Timer?
+    # use ephem to implement a 'end seq @ sunset' type functionality
     def defineStart(self):
         pass
 
@@ -160,11 +162,11 @@ class Timelapse(object):
 
         # finished timelapse
         else:
-            # clean up
             stop()
 
     # stop taking images
     def stop(self):
+        # clean up
         self.timer.cancel()
 
     # get current status of timelapse
