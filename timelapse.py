@@ -6,10 +6,8 @@ from fractions import Fraction
 from threading import Timer
 
 # Bulb ramping mode
-# Investigate the point at which the shutter should be changed from a default
-# shutter speed to bulb mode. ISO ramping also needs to be achievable.
 class Bramp(object):
-
+    # modify to allow either an interval length or x number of shots
     def __init__(self, exln_start, exln_end, interval, bramp_length):
 
         self.exln_start = str(exln_start)
@@ -104,28 +102,71 @@ class Bramp(object):
 class Timelapse(object):
 
     def __int__(self):
-        self.session = []
+        self.session_full = []
+        self.session = None
+        self.session_idx = 0
+        self.seq_idx = 0
+        self.current_interval = None
+        self.timer = None
+        self.running = False
 
     # establish/modify the timelapse order sequence
     def add(self, tl_object, order=False):
         if not order:
-            self.session.append(tl_object)
+            self.session_full.append(tl_object)
         else:
-            self.session.insert(order, tl_object)
+            self.session_full.insert(order, tl_object)
 
     # method for defining when to begin the timelapse
     # options should include:
     #   - starting at the start/end/seq_num of a section - this will alow a bulb ramp to be
-    #   concluded/begun at a specific time (sunrise, sunset etc)
+    #   concluded/begun at a specific time (sunrise, sunset, moon rise etc)
     #   - instantly (button press, user input)
     def defineStart(self):
         pass
 
-    # this needs to take control over the entire timelapse process
-    # must call each shot in order and at the right time; investigate threading.Timer method
+    # a once off method for beginning the timelapse
+    # this will call the first shot and then begin the automated capture sequence
     def start(self):
-        pass
+        self.session = self.session_full[self.session_idx]
+        self.current_interval = self.session.interval
+        self.timekeeper()
+        self.session.captureImage(self.seq_idx)
+        self.seq_idx+=1
+
+    def timekeeper(self):
+        if not self.running:
+            self.timer = Timer(self.current_interval, self.capture)
+            self.timer.start()
+            self.running = True
+
+    def capture(self):
+        self.running = False
+        self.timekeeper()
+        # capture
+        # continue to next shot
+        session_len = len(self.session.shot_details)
+        if self.seq_idx < session_len:
+            self.session.captureImage(self.seq_idx)
+            self.seq_idx+=1
+
+        # finished the current session
+        number_of_sessions = len(self.session_full)
+        elif self.session_idx < number_of_sessions:
+                self.session_idx+=1
+                self.session = self.session_full[self.session_idx]
+                self.seq_idx = 0
+                self.current_interval = self.session.interval
+
+        # finished timelapse
+        else:
+            # clean up
+            stop()
 
     # stop taking images
     def stop(self):
+        self.timer.cancel()
+
+    # get current status of timelapse
+    def status(self):
         pass
