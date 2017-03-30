@@ -126,5 +126,6 @@ class Timelapse(object):
     def start(self):
         pass
 
+    # stop taking images
     def stop(self):
         pass
