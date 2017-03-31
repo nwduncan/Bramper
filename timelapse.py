@@ -4,6 +4,8 @@ import subprocess
 import cameraSettings
 from fractions import Fraction
 from threading import Timer
+import astro
+from enum import Enum
 
 # Bulb ramping mode
 class Bramp(object):
@@ -102,10 +104,10 @@ class Bramp(object):
 class Timelapse(object):
 
     def __int__(self):
-        self.session_full = []
-        self.session = None
-        self.session_idx = 0
-        self.seq_idx = 0
+        self.session_full = []  # list of all sessions to run
+        self.session = None     # currently running session
+        self.session_idx = 0    # current session index
+        self.seq_idx = 0        # current shot index
         self.current_interval = None
         self.timer = None
         self.running = False
@@ -145,7 +147,7 @@ class Timelapse(object):
     def capture(self):
         self.running = False
         self.timekeeper()
-        # capture
+
         # continue to next shot
         session_len = len(self.session.shot_details)
         if self.seq_idx < session_len:
@@ -162,7 +164,7 @@ class Timelapse(object):
 
         # finished timelapse
         else:
-            stop()
+            self.stop()
 
     # stop taking images
     def stop(self):
