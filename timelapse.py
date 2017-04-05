@@ -5,6 +5,7 @@ from fractions import Fraction
 from threading import Timer
 from geopy import geocoders
 import astro
+from datetime import datetime
 
 # Bulb ramping mode
 class Bramp(object):
@@ -20,7 +21,7 @@ class Bramp(object):
         # currently this is anything less than 1 second
         self.cam_shutter_dict = cameraSettings.shutterDict()[0]
         self.cam_shutter_dict = { v: float(Fraction(v)) for k, v in self.cam_shutter_dict.iteritems() if float(Fraction(v)) < 1 }
-        self.cam_shutter_dict['1'] = 1
+        self.cam_shutter_dict["1"] = 1
 
         # instance variables to compute
         self.shot_details = None
@@ -52,8 +53,8 @@ class Bramp(object):
         ramp_int = (float(end_exposure) - start_exposure) / (self.frames - 1)
 
         # build the shot details
-        # { 0: [ 'preset', '1/4000' ],  # for preset shutter speed exposures
-        #   1: [ 'bulb', 15.2 ] }       # for bulb exposures
+        # { 0: [ "preset", "1/4000" ],  # for preset shutter speed exposures
+        #   1: [ "bulb", 15.2 ] }       # for bulb exposures
         shot_dict = {}
         cur_exposure = start_exposure
 
@@ -63,11 +64,11 @@ class Bramp(object):
                 # find the closest preset shutter speed to the current exposure time
                 str_exposure = min(self.cam_shutter_dict.items(), key=lambda (_, v): abs(v - cur_exposure))[0]
                 # diff = cur_exposure - float(Fraction(str_exposure))
-                shot_dict[i] = ['preset', str_exposure]
+                shot_dict[i] = ["preset", str_exposure]
                 cur_exposure+=ramp_int
             # if the current exposure is greater than 1 second use bulb mode
             else:
-                shot_dict[i] = ['bulb', round(cur_exposure, 1)]
+                shot_dict[i] = ["bulb", round(cur_exposure, 1)]
                 cur_exposure+=ramp_int
 
         self.shot_details = shot_dict
@@ -77,24 +78,27 @@ class Bramp(object):
 
         shot_settings = self.shot_details[seq_num]
 
-        if shot_settings[0] == 'preset':
+        if shot_settings[0] == "preset":
             shutter_speed = shot_settings[1]
             # change shutter speed
             cameraSettings.shutterSpeedSet(shutter_speed)
             # capture image
-            sub_p = 'gphoto2 --capture-image'
+            sub_p = "gphoto2 --capture-image"
             subprocess.call(sub_p, shell=True)
 
         else:
             shutter_speed = shot_settings[1]
             # capture image
-            sub_p = 'gphoto2 --capture-image --bulb='+str(shutter_speed)
+            sub_p = "gphoto2 --capture-image --bulb="+str(shutter_speed)
             subprocess.call(sub_p, shell=True)
+
+    def length(self):
+        return len(self.shot_details)*self.interval
 
 
     def __str__(self):
         # replace with something less shit
-        # return ' | '.join([ "Shot"+str(i+1)+": +"+str(self.interval*i)+"s @"+str(e)+"s" for i,e in enumerate(self.shot_list) ])
+        # return " | ".join([ "Shot"+str(i+1)+": +"+str(self.interval*i)+"s @"+str(e)+"s" for i,e in enumerate(self.shot_list) ])
         return self.shot_list
 
 
@@ -127,9 +131,41 @@ class Timelapse(object):
     #   concluded/begun at a specific time (sunrise, sunset, moon rise etc)
     #   - instantly (button press, user input)
     # set this up with another threading.Timer?
-    # use ephem to implement a 'end seq @ sunset' type functionality
-    def defineStart(self):
-        pass
+    # use ephem to implement a "end seq @ sunset" type functionality
+    def defineStart(self, begin_event, begin_session_idx, begin_point):
+
+        events = ["sunrise", "sunset", "moonrise", "moonset"]
+        elapse_until_event = 0
+
+        # establish the time we're using to define the actual start time
+        # if we're passed a datetime object
+        if isinstance(begin_event, datetime):
+            begin_time = begin_event
+
+        # determine time based on astronomical event
+        else:
+            # the class instance location variable must set
+            if self.lat is None or self.lon is None:
+                raise AttributeError("Can't calculate time of {}. No location variables established.".format(begin_event))
+            else:
+                begin_time = astro.event(begin_event, self.lat, self.lon)
+
+        # add length in seconds of all sessions before the start session
+        for x in range(0,begin_session_idx):
+            elapse_until_event+=self.session_full[x].length()
+
+        # if we're starting at the end of the session then the session's final image needs to start capturing data @ begin_time
+        if begin_point == "end":
+            session = self.session_full[begin_session_idx]
+            elapse_until_event+=session.length()-session.interval
+
+        # calculate seconds between now and begin_time
+        now = datetime.now()
+        diff_seconds = int((begin_event-now).total_seconds())
+        seconds_until_tl_start = elapse_until_event-diff_seconds
+
+        # start a countdown
+        do_some_timer_thing(seconds_until_tl_start)
 
     # a once off method for beginning the timelapse
     # this will call the first shot and then begin the automated capture sequence
