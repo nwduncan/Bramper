@@ -1,11 +1,10 @@
-from __future__ import print_function
 import subprocess
 #from subprocess import Popen, PIPE
 import cameraSettings
 from fractions import Fraction
 from threading import Timer
+from geopy import geocoders
 import astro
-from enum import Enum
 
 # Bulb ramping mode
 class Bramp(object):
@@ -111,6 +110,9 @@ class Timelapse(object):
         self.current_interval = None
         self.timer = None
         self.running = False
+        self.address = None
+        self.lat = None
+        self.lon = None
 
     # establish/modify the timelapse order sequence
     def add(self, tl_object, order=False):
@@ -173,4 +175,29 @@ class Timelapse(object):
 
     # get current status of timelapse
     def status(self):
-        pass
+        for s in self.session_full:
+            print s
+
+    def location(self, address):
+        self.address = address
+        geoloc = geocoders.Nominatim()
+        loc = geoloc.geocode(self.address)
+        self.lat, self.lon = loc.latitude, loc.longitude
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #
