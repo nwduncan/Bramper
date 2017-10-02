@@ -48,3 +48,6 @@ Temporary Items
 
 # Custom ignore
 *.pyc
+
+# Virtualenv
+venv/
