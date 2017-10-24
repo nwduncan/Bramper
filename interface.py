@@ -21,9 +21,9 @@ lcd_rows = 2
 # 2222222244444444
 
 
-# Bulb ramping mode
+# LCD control class
 class display(object):
-    # modify to allow either an interval length or x number of shots
+
     def __init__(self):
         self.lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
         self.messages = { "shutter":  [[0,0], ""],
