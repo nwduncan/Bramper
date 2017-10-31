@@ -1,5 +1,6 @@
+# a basic LCD handler for displaying camera info
+
 import Adafruit_CharLCD as LCD
-import cameraSettings
 import time
 
 # wiring variables
@@ -20,16 +21,15 @@ lcd_rows = 2
 # 1111111133333333
 # 2222222244444444
 
-
-# LCD control class
-class display(object):
-
-    def __init__(self):
+# Bulb ramping mode
+class Display(object):
+    # modify to allow either an interval length or x number of shots
+    def __init__(self, quad1, quad2, quad3, quad4):
         self.lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
-        self.messages = { "shutter":  [[0,0], ""],
-                          "iso":      [[0,1], ""],
-                          "aperture": [[8,0], ""],
-                          "misc":     [[8,1], ""] }
+        self.messages = { quad1: [[0,0], ""],
+                          quad2: [[0,1], ""],
+                          quad3: [[8,0], ""],
+                          quad4: [[8,1], ""] }
 
     def refresh(self):
         self.lcd.clear()

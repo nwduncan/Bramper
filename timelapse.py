@@ -1,6 +1,6 @@
 import subprocess
 #from subprocess import Popen, PIPE
-import cameraSettings
+import camera_settings
 from fractions import Fraction
 from threading import Timer
 from geopy import geocoders
@@ -19,7 +19,7 @@ class Bramp(object):
 
         # create dictionary of shutter speed settings to use for when the bulb exposure is too short
         # currently this is anything less than 1 second
-        self.cam_shutter_dict = cameraSettings.shutterDict()[0]
+        self.cam_shutter_dict = camera_settings.shutterDict()[0]
         self.cam_shutter_dict = { v: float(Fraction(v)) for k, v in self.cam_shutter_dict.iteritems() if float(Fraction(v)) < 1 }
         self.cam_shutter_dict["1"] = 1
 
@@ -81,7 +81,7 @@ class Bramp(object):
         if shot_settings[0] == "preset":
             shutter_speed = shot_settings[1]
             # change shutter speed
-            cameraSettings.shutterSpeedSet(shutter_speed)
+            camera_settings.shutterSpeedSet(shutter_speed)
             # capture image
             sub_p = "gphoto2 --capture-image"
             subprocess.call(sub_p, shell=True)
