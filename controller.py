@@ -17,11 +17,14 @@ lcd = interface.Display(shutter, iso, aperture, misc)
 
 # get camera settings (currenlty shutter only)
 def get_refresh(lcd):
-    lcd.messages[shutter][1] = camera_settings.shutterSpeedGet()
-    lcd.messages[iso][1] = "800"
-    lcd.messages[aperture][1] = "f1.4"
+    lcd.messages[shutter][1] = camera_settings.get_shutter()
+    lcd.messages[iso][1] = camera_settings.get_iso()
+    lcd.messages[aperture][1] = camera_settings.get_aperture()
     lcd.messages[misc][1] = ""
     lcd.refresh()
+
+# set initial display
+get_refresh(lcd)
 
 # refreshes the LCD on a button press
 while True:
