@@ -15,7 +15,7 @@ aperture = "aperture"
 misc = "misc"
 lcd = interface.Display(shutter, iso, aperture, misc)
 
-# get camera settings (currenlty shutter only)
+# get camera settings and display them
 def get_refresh(lcd):
     lcd.messages[shutter][1] = camera_settings.get_shutter()
     lcd.messages[iso][1] = camera_settings.get_iso()
@@ -26,9 +26,47 @@ def get_refresh(lcd):
 # set initial display
 get_refresh(lcd)
 
-# refreshes the LCD on a button press
+
+# cursor movement
+# 1 3
+# 2 4
+
+pos = 1
+lcd.set_cursor_pos(1)
+
+def up():
+    global pos
+    pos-= 1 if pos%2 == 0 else 0
+    lcd.set_cursor_pos(pos)
+    return
+
+def down():
+    global pos
+    pos+= 1 if pos%2 == 1 else 0
+    lcd.set_cursor_pos(pos)
+    return
+
+def right():
+    global pos
+    pos+=2 if pos < 3 else 0
+    lcd.set_cursor_pos(pos)
+    return
+
+def left():
+    global pos
+    pos-=2 if pos > 2 else 0
+    lcd.set_cursor_pos(pos)
+    return
+
+
 while True:
-    input_state = GPIO.input(button1_pin)
-    if input_state == False:
-        get_refresh(lcd)
-        time.sleep(0.2)
+    move = raw_input('direction')
+    locals()[move]()
+
+
+# refreshes the LCD on a button press
+# while True:
+#     input_state = GPIO.input(button1_pin)
+#     if input_state == False:
+#         get_refresh(lcd)
+#         time.sleep(0.2)
