@@ -1,6 +1,4 @@
 import subprocess
-from subprocess import Popen, PIPE
-
 
 # set download location to be memory card
 def set_target_card():
@@ -10,22 +8,40 @@ def set_target_card():
 
 # return the current shutter speed
 def get_shutter():
-    child = Popen(["gphoto2", "--get-config=shutterspeed2"], stdout=PIPE)
+    child = subprocess.Popen(["gphoto2", "--get-config=shutterspeed2"], stdout=subprocess.PIPE)
     results = child.communicate()[0].split("\n")
-    return results[2].split(" ")[1]
+    return results[2].split(" ")[-1]
+
+def get_shutter_list():
+    child = subprocess.Popen(["gphoto2", "--get-config=shutterspeed2"], stdout=subprocess.PIPE)
+    trunc_results = child.communicate()[0].split("\n")[3:]
+    results = [ opt.split(" ")[-1] for opt in trunc_results if opt != '' ]
+    return results
 
 # return the current ISO setting
 def get_iso():
-    child = Popen(["gphoto2", "--get-config=iso"], stdout=PIPE)
+    child = subprocess.Popen(["gphoto2", "--get-config=iso"], stdout=subprocess.PIPE)
     results = child.communicate()[0].split("\n")
-    return results[2].split(" ")[1]
+    return results[2].split(" ")[-1]
+
+# return a list of ISO options
+def get_iso_list():
+    child = subprocess.Popen(["gphoto2", "--get-config=iso"], stdout=subprocess.PIPE)
+    trunc_results = child.communicate()[0].split("\n")[3:]
+    results = [ opt.split(" ")[-1] for opt in trunc_results if opt != '' ]
+    return results
 
 # return current f-stop
 def get_aperture():
-    child = Popen(["gphoto2", "--get-config=f-number"], stdout=PIPE)
+    child = subprocess.Popen(["gphoto2", "--get-config=f-number"], stdout=subprocess.PIPE)
     results = child.communicate()[0].split("\n")
-    return results[2].split(" ")[1]
+    return results[2].split(" ")[-1]
 
+def get_aperture_list():
+    child = subprocess.Popen(["gphoto2", "--get-config=f-number"], stdout=subprocess.PIPE)
+    trunc_results = child.communicate()[0].split("\n")[3:]
+    results = [ opt.split(" ")[-1] for opt in trunc_results if opt != '' ]
+    return results
 
 
 ## debug & testing functions - remove ##
@@ -33,7 +49,7 @@ def get_aperture():
 # return a dictionary of shutter speed options and a list which can be used
 # for user input in selecting a shutter speed
 def shutter_dict():
-    raw_get = Popen(["gphoto2", "--get-config=shutterspeed2"], stdout=PIPE)
+    raw_get = subprocess.Popen(["gphoto2", "--get-config=shutterspeed2"], stdout=subprocess.PIPE)
     raw_split = raw_get.communicate()[0].split("\n")
     speeds = { int(x.split()[1])+1: x.split()[2] for x in raw_split if "Choice:" in x }
     choices = sorted([ c for c in speeds ])
@@ -41,7 +57,7 @@ def shutter_dict():
 
 # same as above but asked for input
 def shutter_speed_options(display=True):
-    raw_get = Popen(["gphoto2", "--get-config=shutterspeed2"], stdout=PIPE)
+    raw_get = subprocess.Popen(["gphoto2", "--get-config=shutterspeed2"], stdout=subprocess.PIPE)
     raw_split = raw_get.communicate()[0].split("\n")
     speeds = { int(x.split()[1]): x.split()[2] for x in raw_split if "Choice:" in x }
     choices = sorted([ c for c in speeds ])
