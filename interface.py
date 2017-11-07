@@ -29,7 +29,8 @@ QUAD_POS = { 1: [0,0],
 # LCD display control class
 class Display(object):
     def __init__(self, quad1, quad2, quad3, quad4):
-        self.lcd = LCD.Adafruit_CharLCD(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7, LCD_COL, LCD_ROWS, LCD_BL)
+        self.lcd = LCD.Adafruit_CharLCD(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6,
+                                        LCD_D7, LCD_COL, LCD_ROWS, LCD_BL)
         self.messages = { quad1: [QUAD_POS[1], ""],
                           quad2: [QUAD_POS[2], ""],
                           quad3: [QUAD_POS[3], ""],
