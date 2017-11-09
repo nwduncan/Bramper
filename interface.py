@@ -18,12 +18,12 @@ LCD_ROWS = 2
 
 # dictionary to define LCD message quadrants
 # column and row start @ 0
+# 0000000022222222
 # 1111111133333333
-# 2222222244444444
-QUAD_POS = { 1: [0,0],
-             2: [0,1],
-             3: [8,0],
-             4: [8,1] }
+QUAD_POS = { 0: [0,0],
+             1: [0,1],
+             2: [8,0],
+             3: [8,1] }
 
 
 # LCD display control class
