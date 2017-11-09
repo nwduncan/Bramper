@@ -3,16 +3,23 @@ import camera_settings
 import RPi.GPIO as GPIO
 import time
 
+
+## Initialise stuff
 # button variables
 button1_pin = 13
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(button1_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# LCD variables
-shutter = "shutter"
+# These variables serve two purposes:
+# - Calling gphoto2/camera specific config settings
+# - To define where to display these elements in the interface.Display class
+shutter = "shutterspeed2"
 iso = "iso"
-aperture = "aperture"
+aperture = "f-number"
 misc = "misc"
+
+# initialise the LCD for use
+#           LCD section:   1      2       3       4
 lcd = interface.Display(shutter, iso, aperture, misc)
 
 # find the index of an item in a list
@@ -20,44 +27,57 @@ def get_idx(item, options):
     for idx, opt in enumerate(options):
         if opt == item:
             return idx
-        return
+    return False
 
-# incomplete -- use the get_refresh function to create these variables
-options_shutter = camera_settings.get_shutter()
-# idx_shutter = get_idx()
-options_iso = camera_settings.get_iso_list()
-options_aperture = camera_settings.get_aperture()
+# shutter
+shutter_current = camera_settings.get_config(shutter)
+shutter_options = camera_settings.get_options(shutter)
+shutter_index = get_idx(shutter_current, shutter_options)
+
+# iso
+iso_current = camera_settings.get_config(iso)
+iso_options = camera_settings.get_options(iso)
+iso_index = get_idx(iso_current, iso_options)
+
+# aperture
+aperture_current = camera_settings.get_config(aperture)
+aperture_options = camera_settings.get_options(aperture)
+aperture_index = get_idx(aperture_current, aperture_options)
+
 
 # get camera settings and display them
 # this should also update the lists of options and the index of the current setting
-def get_refresh(lcd):
-    lcd.messages[shutter][1] = camera_settings.get_shutter()
-    lcd.messages[iso][1] = camera_settings.get_iso()
-    lcd.messages[aperture][1] = camera_settings.get_aperture()
+def display_refresh(lcd):
+    lcd.messages[shutter][1] = shutter_current
+    lcd.messages[iso][1] = iso_current
+    lcd.messages[aperture][1] = aperture_current
     lcd.messages[misc][1] = ""
     lcd.refresh()
 
 # set initial display
-get_refresh(lcd)
+display_refresh(lcd)
 
+
+
+## Control scheme stuff
 # cursor movement
+# 0 2
 # 1 3
-# 2 4
-pos = 1
-lcd.set_cursor_pos(1)
+pos = 0
+lcd.set_cursor_pos(0)
 
 # control scheme 2
 # reverse scroll through screen positions
 def up():
     global pos
-    pos-= 1 if pos > 1 else -3
+    pos-= 1 if pos > 0 else -3
     lcd.set_cursor_pos(pos)
     return
 
 # forward scroll through screen positions
 def down():
     global pos
-    pos+= 1 if pos < 4 else -3
+    pos+= 1 if pos < 3 else -3
     lcd.set_cursor_pos(pos)
     return
 
@@ -96,6 +116,10 @@ def left():
 #     return
 #
 #
+
+
+
+## Interaction stuff
 while True:
     move = raw_input('direction')
     locals()[move]()
