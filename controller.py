@@ -51,11 +51,9 @@ def refresh_display():
     global lcd, control
 
     for config in control:
-        lcd.messages[config][1] = control[config]
-    lcd.messages[shutter][1] = shutter_current
-    lcd.messages[iso][1] = iso_current
-    lcd.messages[aperture][1] = aperture_current
-    lcd.refresh()
+        lcd.set_message(config, control[config][0])
+
+    return
 
 refresh_display()
 
