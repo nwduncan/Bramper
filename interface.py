@@ -59,6 +59,12 @@ class Display(object):
         self.lcd.set_cursor(QUAD_POS[position][0], QUAD_POS[position][1])
         self.lcd.blink(True)
 
+    def blink(self, mode):
+        self.lcd.blink(mode)
+
+    def clear(self):
+        self.lcd.clear()
+
 
 
 
