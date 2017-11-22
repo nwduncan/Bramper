@@ -27,14 +27,21 @@ order = [shutter, iso, aperture, info]
 # control = { config_name: [current_setting, options, new_setting] }
 control = { shutter: [camera_settings.get_config(shutter), camera_settings.get_options(shutter), None],
             iso: [camera_settings.get_config(iso), camera_settings.get_options(iso), None],
-            aperture: [camera_settings.get_config(shutter), camera_settings.get_options(shutter), None]}
+            aperture: [camera_settings.get_config(aperture), camera_settings.get_options(aperture), None]}
 
 # initialise the LCD and set the default cursor position
 lcd = interface.Display(order[0], order[1], order[2], order[3])
 pos = 0
 lcd.set_cursor_pos(0)
 
-# edit_mode = True
+editing = False
+
+def edit_mode(mode):
+    global editing, lcd
+    editing = mode
+    lcd.blink(mode)
+
+    return
 
 # refresh camera data
 def refresh_camera_config():
@@ -48,10 +55,15 @@ def refresh_camera_config():
 
 # refresh display
 def refresh_display():
-    global lcd, control
+    global lcd, control, editing
+
+    lcd.clear()
 
     for config in control:
         lcd.set_message(config, control[config][0])
+
+    lcd.set_cursor_pos(pos)
+    edit_mode(editing)
 
     return
 
@@ -65,71 +77,121 @@ def get_idx(item, options):
     for idx, opt in enumerate(options):
         if opt == item:
             return idx
+
     return False
 
 
 # control scheme 2
 # reverse scroll through screen positions
 def up():
-    global pos
-    pos-= 1 if pos > 0 else -3
-    lcd.set_cursor_pos(pos)
+    global editing
+    if editing:
+
+        global pos
+        pos-= 1 if pos > 0 else -3
+        lcd.set_cursor_pos(pos)
+
     return
 
 # forward scroll through screen positions
 def down():
-    global pos
-    pos+= 1 if pos < 3 else -3
-    lcd.set_cursor_pos(pos)
+    global editing
+    if editing:
+
+        global pos
+        pos+= 1 if pos < 3 else -3
+        lcd.set_cursor_pos(pos)
+
     return
 
 # scroll right through current option values
 def right():
-    global pos, order, lcd, control
+    global editing
+    if editing:
 
-    current_name = order[pos]
-    current = control[current_name][0]
-    options = control[current_name][1]
-    current_idx = get_idx(current, options)
+        global pos, order, lcd, control
 
-    if current_idx < (len(options)-1):
-        new_idx = current_idx+1
-        new_config = options[new_idx]
-    else:
-        new_idx = 0
-        new_config = options[new_idx]
+        current_name = order[pos]
 
-    control[current_name][2] = new_config
-    lcd.set_message(current_name, new_config)
+        if control[current_name][2] is None:
+            current = control[current_name][0]
+        else:
+            current = control[current_name][2]
+
+        options = control[current_name][1]
+        current_idx = get_idx(current, options)
+
+        if current_idx < (len(options)-1):
+            new_idx = current_idx+1
+            new_config = options[new_idx]
+        else:
+            new_idx = 0
+            new_config = options[new_idx]
+
+        control[current_name][2] = new_config
+        lcd.set_message(current_name, new_config)
+        lcd.set_cursor_pos(pos)
 
     return
 
 # scroll left through current option values
 def left():
-    global pos, order, lcd, control
+    global editing
+    if editing:
 
-    current_name = order[pos]
-    current = control[current_name][0]
-    options = control[current_name][1]
-    current_idx = get_idx(current, options)
+        global pos, order, lcd, control
 
-    if current_idx > 0:
-        new_idx = current_idx-1
-        new_config = options[new_idx]
-    else:
-        new_idx = len(options)-1
-        new_config = options[new_idx]
+        current_name = order[pos]
 
-    control[current_name][2] = new_config
-    lcd.set_message(current_name, new_config)
+        if control[current_name][2] is None:
+            current = control[current_name][0]
+        else:
+            current = control[current_name][2]
+
+        options = control[current_name][1]
+        current_idx = get_idx(current, options)
+
+        if current_idx > 0:
+            new_idx = current_idx-1
+            new_config = options[new_idx]
+        else:
+            new_idx = len(options)-1
+            new_config = options[new_idx]
+
+        control[current_name][2] = new_config
+        lcd.set_message(current_name, new_config)
+        lcd.set_cursor_pos(pos)
+
+    return
+
+# apply settings
+def submit():
+    global control, lcd
+
+    for config in control:
+        new_setting = control[config][2]
+        if new_setting is not None:
+            control[config][0] = new_setting
+            camera_settings.set_config(config, new_setting)
+
+    refresh_display()
+    edit_mode(False)
+
+    lcd.blink(False)
+
+# testing only. remove once command line function calling isn't required
+def edit():
+    global editing
+    editing = not editing
+    edit_mode(editing)
 
     return
 
 
-## Interaction stuff
+# allows functions to be called from command line while testing
 while True:
-    move = raw_input('direction')
-    locals()[move]()
+    function = raw_input('function')
+    locals()[function]()
 
 
 # refreshes the LCD on a button press
