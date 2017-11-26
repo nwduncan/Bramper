@@ -7,10 +7,18 @@ import time
 
 ## Initialise stuff
 # button variables
-button1_pin = 13
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(button1_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+pin_up = 5
+pin_down = 6
+pin_left = 13
+pin_right = 19
+pin_select = 26
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(pin_up, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(pin_down, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(pin_left, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(pin_right, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(pin_select, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 # These variables serve two purposes:
@@ -188,15 +196,49 @@ def edit():
     return
 
 
-# allows functions to be called from command line while testing
-while True:
-    function = raw_input('function')
-    locals()[function]()
+# # allows functions to be called from command line while testing
+# while True:
+#     function = raw_input('function')
+#     locals()[function]()
 
 
 # refreshes the LCD on a button press
-# while True:
-#     input_state = GPIO.input(button1_pin)
-#     if input_state == False:
-#         get_refresh(lcd)
-#         time.sleep(0.2)
+
+edit_mode(True)
+
+while True:
+    if GPIO.input(pin_up) == GPIO.LOW:
+        up()
+        time.sleep(0.5)
+    elif GPIO.input(pin_down) == GPIO.LOW:
+        down()
+        time.sleep(0.5)
+    elif GPIO.input(pin_left) == GPIO.LOW:
+        left()
+        time.sleep(0.5)
+    elif GPIO.input(pin_right) == GPIO.LOW:
+        right()
+        time.sleep(0.5)
+    elif GPIO.input(pin_select) == GPIO.LOW:
+        submit()
+        time.sleep(0.5)
+    else:
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #
