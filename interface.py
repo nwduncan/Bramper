@@ -1,5 +1,5 @@
+### depricated ###
 # a basic LCD handler for displaying camera info
-
 import Adafruit_CharLCD as LCD
 import time
 

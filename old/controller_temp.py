@@ -1,24 +1,6 @@
-import interface
-import camera_settings
-import RPi.GPIO as GPIO
-import time
 
 
 
-## Initialise stuff
-# button variables
-pin_up = 5
-pin_down = 6
-pin_left = 13
-pin_right = 19
-pin_select = 26
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(pin_up, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(pin_down, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(pin_left, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(pin_right, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(pin_select, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 ### screen 1 setup ###
