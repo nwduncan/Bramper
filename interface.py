@@ -20,21 +20,26 @@ LCD_ROWS = 2
 # column and row start @ 0
 # 0000000022222222
 # 1111111133333333
-QUAD_POS = { 0: [0,0],
-             1: [0,1],
-             2: [8,0],
-             3: [8,1] }
+# QUAD_POS = { 0: [0,0],
+#              1: [0,1],
+#              2: [8,0],
+#              3: [8,1] }
 
 
 # LCD display control class
-class Display(object):
+class Interface(object):
     def __init__(self, quad0, quad1, quad2, quad3):
         self.lcd = LCD.Adafruit_CharLCD(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6,
                                         LCD_D7, LCD_COL, LCD_ROWS, LCD_BL)
-        self.messages = { quad0: [QUAD_POS[0], ""],
-                          quad1: [QUAD_POS[1], ""],
-                          quad2: [QUAD_POS[2], ""],
-                          quad3: [QUAD_POS[3], ""] }
+        self.screens = []
+        # self.messages = { quad0: [QUAD_POS[0], ""],
+        #                   quad1: [QUAD_POS[1], ""],
+        #                   quad2: [QUAD_POS[2], ""],
+        #                   quad3: [QUAD_POS[3], ""] }
+
+    def add(self, name, layout):
+        new_screen = { name: layout }
+        self.screens.append(new_screen)
 
     def refresh(self):
         self.lcd.clear()
@@ -42,7 +47,7 @@ class Display(object):
             self.lcd.set_cursor(self.messages[msg][0][0], self.messages[msg][0][1])
             self.lcd.message(self.messages[msg][1])
 
-    def set_message(self, section, message):
+    def set_message(self, screen, section, message):
         if section in self.messages:
             self.messages[section][1] = message
             self.refresh()
@@ -64,17 +69,3 @@ class Display(object):
 
     def clear(self):
         self.lcd.clear()
-
-
-
-
-
-
-
-
-
-
-
-
-
-#

@@ -21,9 +21,10 @@ GPIO.setup(pin_right, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(pin_select, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
+### screen 1 setup ###
 # These variables serve two purposes:
 # - Calling gphoto2/camera specific config settings
-# - To define where to display these elements in the interface.Display class
+# - To define where to display these elements in the interface.Interface class
 # - Has the potential to allow profiles for different cameras to be set up
 # - Currently 'info' represents the section which will display control options (enter, cancel, refresh, etc)
 shutter = "shutterspeed2"
@@ -37,8 +38,13 @@ control = { shutter: [camera_settings.get_config(shutter), camera_settings.get_o
             iso: [camera_settings.get_config(iso), camera_settings.get_options(iso), None],
             aperture: [camera_settings.get_config(aperture), camera_settings.get_options(aperture), None]}
 
+layout_screen1 = { shutter:  [[0,0], ""],
+                   iso:      [[0,1], ""],
+                   aperture: [[8,0], ""],
+                   info:     [[8,1], ""] }
+
 # initialise the LCD and set the default cursor position
-lcd = interface.Display(order[0], order[1], order[2], order[3])
+lcd = interface.LCD(order[0], order[1], order[2], order[3])
 pos = 0
 lcd.set_cursor_pos(0)
 
