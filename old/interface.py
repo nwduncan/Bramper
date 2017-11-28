@@ -47,7 +47,7 @@ class Interface(object):
             self.lcd.set_cursor(self.messages[msg][0][0], self.messages[msg][0][1])
             self.lcd.message(self.messages[msg][1])
 
-    def set_message(self, screen, section, message):
+    def set_message(self, section, message):
         if section in self.messages:
             self.messages[section][1] = message
             self.refresh()
