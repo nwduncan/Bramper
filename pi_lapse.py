@@ -23,23 +23,27 @@ PIN_LEFT = 13
 PIN_RIGHT = 19
 PIN_SELECT = 26
 
+# button set up
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PIN_UP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(pin_down, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(pin_left, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(pin_right, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(pin_select, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(PIN_DOWN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(PIN_LEFT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(PIN_RIGHT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(PIN_SELECT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 lcd = LCD.Adafruit_CharLCD(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7, LCD_COL, LCD_ROWS, LCD_BL)
 screen_settings = screens.Settings("shutterspeed2", "iso", "f-number", lcd)
 
-active = screen_settings
+active = None
 
 def make_active(screen):
     global active
     active = screen
     active.set_active()
 
+make_active(screen_settings)
+
+print "display initialised"
 
 while True:
     if GPIO.input(PIN_UP) == GPIO.LOW:
