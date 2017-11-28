@@ -33,22 +33,29 @@ GPIO.setup(pin_select, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 lcd = LCD.Adafruit_CharLCD(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7, LCD_COL, LCD_ROWS, LCD_BL)
 screen_settings = screens.Settings("shutterspeed2", "iso", "f-number", lcd)
 
+active = screen_settings
+
+def make_active(screen):
+    global active
+    active = screen
+    active.set_active()
+
 
 while True:
     if GPIO.input(PIN_UP) == GPIO.LOW:
-        screen_settings.up()
+        active.up()
         time.sleep(0.5)
     elif GPIO.input(PIN_DOWN) == GPIO.LOW:
-        screen_settings.down()
+        active.down()
         time.sleep(0.5)
     elif GPIO.input(PIN_LEFT) == GPIO.LOW:
-        screen_settings.left()
+        active.left()
         time.sleep(0.5)
     elif GPIO.input(PIN_RIGHT) == GPIO.LOW:
-        screen_settings.right()
+        active.right()
         time.sleep(0.5)
     elif GPIO.input(PIN_SELECT) == GPIO.LOW:
-        screen_settings.submit()
+        active.submit()
         time.sleep(0.5)
     else:
         pass
