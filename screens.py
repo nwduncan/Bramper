@@ -1,4 +1,3 @@
-import interface
 import camera_settings
 
 
@@ -22,9 +21,9 @@ class Settings(object):
                        f_number: [camera_settings.get_config(f_number),         # [f_number speed
                                   camera_settings.get_options(f_number), None]} #  f_number options, temp/next setting]
 
-        self.layout = { self.shutter:  [[0,0], ""],
-                        self.iso:      [[0,1], ""],
-                        self.f_number: [[8,0], ""],
+        self.layout = { self.shutter:  [[0,0], self.control[self.shutter][0]],
+                        self.iso:      [[0,1], self.control[self.iso][0]],
+                        self.f_number: [[8,0], self.control[self.f_number][0]],
                         self.other:    [[8,1], ""] }
 
 
@@ -54,14 +53,14 @@ class Settings(object):
         self.lcd.clear()
         original_pos = self.pos
 
-        for idx, config in enumerate(self.layout):
+        for idx, config in enumerate(self.order):
             self.pos = idx
-            self.set_cursor()
+            self.set_cursor_pos()
             self.lcd.message(self.layout[config][1])
 
         self.pos = original_pos
         self.set_cursor_pos()
-        self.edit_mode(editing)
+        self.edit_mode(self.editing)
 
 
     # find where in list of options current setting is
@@ -81,7 +80,7 @@ class Settings(object):
 
     ## All user input comes through the below methods
     ## The above methods are accessed from within the class only
-    
+
     # reverse scroll through screen positions
     def up(self):
         if self.editing:
@@ -148,11 +147,15 @@ class Settings(object):
 
     # apply settings
     def submit(self):
-        for config in self.control:
-            new_setting = self.control[config][2]
-            if new_setting is not None:
-                self.control[config][0] = new_setting
-                camera_settings.set_config(config, new_setting)
+        if self.editing:
+            for config in self.control:
+                new_setting = self.control[config][2]
+                if new_setting is not None:
+                    self.control[config][0] = new_setting
+                    camera_settings.set_config(config, new_setting)
 
-        self.refresh_display()
-        self.edit_mode(False)
+            self.refresh_display()
+            self.edit_mode(False)
+
+        else:
+            self.edit_mode(True)
