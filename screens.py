@@ -79,6 +79,9 @@ class Settings(object):
         self.lcd.set_cursor(self.layout[pos_setting][0][0], self.layout[pos_setting][0][1])
 
 
+    ## All user input comes through the below methods
+    ## The above methods are accessed from within the class only
+    
     # reverse scroll through screen positions
     def up(self):
         if self.editing:
