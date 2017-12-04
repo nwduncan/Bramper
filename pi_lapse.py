@@ -1,4 +1,4 @@
-import screens
+import ui
 import time
 import RPi.GPIO as GPIO
 import Adafruit_CharLCD as LCD
@@ -32,7 +32,7 @@ GPIO.setup(PIN_RIGHT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(PIN_SELECT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 lcd = LCD.Adafruit_CharLCD(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7, LCD_COL, LCD_ROWS, LCD_BL)
-screen_settings = screens.Settings("shutterspeed2", "iso", "f-number", lcd)
+screen_settings = ui.Settings(lcd, "shutterspeed2", "iso", "f-number")
 
 active = None
 
