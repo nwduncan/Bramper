@@ -1,5 +1,7 @@
 import camera_settings
 from threading import Timer
+import time
+
 
 # view and change camera exposure settings
 class Settings(object):
@@ -165,7 +167,7 @@ class Settings(object):
 
 # timelapse display and control
 class Timelapse(object):
-    def __int__(self, lcd, settings, interval, number):
+    def __init__(self, lcd, settings, interval, number):
         self.lcd = lcd
         self.settings = settings
         self.interval = interval
@@ -175,11 +177,13 @@ class Timelapse(object):
         self.timer = None
         self.running = False
         self.active = False
+        self.start_time = None
 
 
     # a once off method for beginning the timelapse
     # this will call the first shot and then begin the automated capture sequence
     def start(self):
+        print "Started timelapse. Results should take {} seconds".format((self.number-1)*self.interval)
         self.intervalometer()
         self.capture()
         self.refresh_display()
@@ -195,8 +199,10 @@ class Timelapse(object):
     def refresh_display(self):
         if self.active:
             self.lcd.clear()
-            ## render lines
-            # self.lcd.message(data to display)
+            self.lcd.set_cursor(0, 0)
+            self.lcd.message("{}/{}".format(self.sequence_count, self.number))
+            self.lcd.set_cursor(0, 1)
+            self.lcd.message("{}".format(self.interval-self.interval_count if self.timer is not None else ""))
 
 
     # use threading to keep intervals somewhat correct
@@ -234,6 +240,7 @@ class Timelapse(object):
     # stop taking images
     def stop(self):
         self.timer.cancel()
+        print("--- %s seconds ---" % (time.time() - self.start_time))
 
 
 
