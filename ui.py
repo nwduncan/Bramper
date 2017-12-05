@@ -1,7 +1,7 @@
 import camera_settings
 from threading import Timer
 
-# screen for viewing & changing camera exposure settings
+# view and change camera exposure settings
 class Settings(object):
     def __init__(self, lcd, shutter, iso, f_number):
         self.shutter = shutter
@@ -28,7 +28,7 @@ class Settings(object):
 
 
     def set_active(self):
-        self.refresh_camera_config() # check initialisation speed. might not be worth implementing
+        # self.refresh_camera_config() # check initialisation speed. might not be worth implementing
         self.refresh_display()
         self.edit_mode(False)
         self.pos = 0
@@ -162,50 +162,73 @@ class Settings(object):
 
 
 
+
+# timelapse display and control
 class Timelapse(object):
     def __int__(self, lcd, settings, interval, number):
         self.lcd = lcd
         self.settings = settings
         self.interval = interval
+        self.interval_count = 0
         self.number = number
-        self.count = 0
+        self.sequence_count = 0
         self.timer = None
         self.running = False
+        self.active = False
 
 
     # a once off method for beginning the timelapse
     # this will call the first shot and then begin the automated capture sequence
     def start(self):
         self.intervalometer()
-        self.Timer(1, self.refresh_display)
+        self.capture()
+        self.refresh_display()
 
+
+    # set screen as active
+    def set_active(self):
+        self.active = True
+        self.refresh_display()
+
+
+    # refresh the display only if the screen is active
     def refresh_display(self):
-        self.lcd.clear()
-        ## render lines
-        # self.lcd.message(data to display)
+        if self.active:
+            self.lcd.clear()
+            ## render lines
+            # self.lcd.message(data to display)
 
 
     # use threading to keep intervals somewhat correct
     def intervalometer(self):
         if not self.running:
-            self.timer = Timer(self.interval, self.capture)
+            self.timer = Timer(1, self.update)
             self.timer.start()
             self.running = True
 
-    # take an image
-    def capture(self):
+
+    # determine whether to take image or just refresh display
+    def update(self):
         self.running = False
         self.intervalometer()
+        self.interval_count += 1
 
-        if self.count < self.number:
-            self.release()
-            self.count += 1
+        if self.interval_count == self.interval:
+            self.capture()
+
+        self.refresh_display()
+
+
+    # take shot
+    def capture(self):
+        if self.sequence_count < self.number:
+            # shutter_release()
+            self.sequence_count += 1
+            self.interval_count = 0
 
             # finished timelapse
-            if self.count == self.number:
+            if self.sequence_count == self.number:
                 self.stop()
-        else:
-            self.stop()
 
 
     # stop taking images
@@ -213,7 +236,13 @@ class Timelapse(object):
         self.timer.cancel()
 
 
-    # set off shutter release cable
-    def release(self):
 
-        return
+# ####################
+# Shutter:      1/4000
+# F-number:      f/2.8
+# ISO            12800
+# --------------------
+# Shots:     1000/1000
+# Next shot:        60
+# Time left:  10:23:42
+######################
