@@ -240,7 +240,7 @@ class Timelapse(object):
     # stop taking images
     def stop(self):
         self.timer.cancel()
-        print("--- %s seconds ---" % (time.time() - self.start_time))
+        print "--- {} seconds ---".format(time.time() - self.start_time)
 
 
 
