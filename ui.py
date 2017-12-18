@@ -23,10 +23,10 @@ class Settings(object):
                        f_number: [camera_settings.get_config(f_number),         # [f_number speed
                                   camera_settings.get_options(f_number), None]} #  f_number options, temp/next setting]
 
-        self.layout = { self.shutter:  [[0,0], self.control[self.shutter][0]],
-                        self.iso:      [[0,1], self.control[self.iso][0]],
-                        self.f_number: [[8,0], self.control[self.f_number][0]],
-                        self.other:    [[8,1], ""] }
+        self.layout = { self.shutter:  [[0,0], "Shutter:"+(" "*(12-len(self.control[self.shutter][0])))+self.control[self.shutter][0]],
+                        self.iso:      [[0,1], "ISO:"+(" "*(16-len(self.control[self.iso][0])))+self.control[self.iso][0]],
+                        self.f_number: [[0,2], "f-number:"+(" "*(11-len(self.control[self.f_number][0])))+self.control[self.f_number][0]],
+                        self.other:    [[0,3], ""] }
 
 
     def set_active(self):

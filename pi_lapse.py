@@ -44,7 +44,7 @@ def make_active(screen):
     active = screen
     active.set_active()
 
-make_active(timelapse)
+make_active(settings)
 
 timelapse.start_time = time.time()
 timelapse.start()
