@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+
+<head>
+    <title>Pi-Lapse</title>
+    <!-- <link rel="stylesheet" media="screen" href ="static/css/bootstrap.css">
+    <link rel="stylesheet" href="static/css/bootstrap.css"> -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="container">
+        <br>
+        <h2><p align="center">Pi-Lapse</p></h2>
+        <form  action="" method="post" role="form">
+            {{ form.csrf }}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="name">Bulb:</label>
+                        <input type="number" class="form-control" id="bulb" name="bulb" placeholder="Length of shutter">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="name">Interval:</label>
+                        <input type="number" class="form-control" id="interval" name="interval" placeholder="Time between shots">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="name">Number:</label>
+                        <input type="number" class="form-control" id="number" name="number" placeholder="Number of shots">
+                    </div>
+                </div>
+            </div>
+                <br>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+
+        </form>
+
+        <br>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "Error" in message[1] %}
+                        <div class="alert alert-warning">
+                            {{ message[1] }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <strong>Success! </strong> {{ message[1] }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+</div>
+<br>
+</div>
+</div>
+</body>
+</html>

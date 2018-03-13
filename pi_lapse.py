@@ -1,7 +1,20 @@
+# run with:
+# export FLASK_APP=website.py
+# flask run -h '192.168.10.1'
+# result will be at:
+# http://192.168.10.1:5000/
+from flask import Flask, render_template, flash, request, Markup
+from wtforms import Form, validators, IntegerField, FloatField, TextField
+from datetime import datetime, timedelta
 import timelapse
 import time
-# import RPi.GPIO as GPIO
 import Adafruit_CharLCD as LCD
+
+# App config
+DEBUG = True
+app = Flask(__name__)
+app.config.from_object(__name__)
+# app.config['SECRET_KEY'] = '7d441f27d441f27567d411f2b6176a'
 
 # wiring variables
 LCD_RS = 25
@@ -16,67 +29,40 @@ LCD_BL = 4
 LCD_COL = 16
 LCD_ROWS = 2
 
-# button variables
-# PIN_UP = 5
-# PIN_DOWN = 6
-# PIN_LEFT = 13
-# PIN_RIGHT = 19
-# PIN_SELECT = 26
-# PIN_UI = 27
-
-# button set up
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(PIN_UP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# GPIO.setup(PIN_DOWN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# GPIO.setup(PIN_LEFT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# GPIO.setup(PIN_RIGHT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# GPIO.setup(PIN_SELECT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# GPIO.setup(PIN_UI, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
 lcd = LCD.Adafruit_CharLCD(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7, LCD_COL, LCD_ROWS, LCD_BL)
-# settings = settings.Settings(lcd, "shutterspeed2", "iso", "f-number")
-timelapse = timelapse.Timelapse(lcd, 5, 10, 10)
-#
-# active = None
-#
-# def make_active(screen):
-#     global active
-#     active = screen
-#     active.set_active()
-#
-# make_active(settings)
 
-timelapse.start_time = time.time()
-timelapse.start()
+class ReusableForm(Form):
+    bulb = FloatField('bulb', validators=[validators.required()])
+    interval = IntegerField('interval', validators=[validators.required()])
+    number = IntegerField('number', validators=[validators.required()])
 
-#### the below code prevents the timelapse Timer threads from firing at the correct time
-# while True:
-#     if GPIO.input(PIN_UP) == GPIO.LOW:
-#         active.up()
-#         time.sleep(0.5)
-#     elif GPIO.input(PIN_DOWN) == GPIO.LOW:
-#         active.down()
-#         time.sleep(0.5)
-#     elif GPIO.input(PIN_LEFT) == GPIO.LOW:
-#         active.left()
-#         time.sleep(0.5)
-#     elif GPIO.input(PIN_RIGHT) == GPIO.LOW:
-#         active.right()
-#         time.sleep(0.5)
-#     elif GPIO.input(PIN_SELECT) == GPIO.LOW:
-#         # active.submit()
-#         start_time = time.time()
-#         timelapse.start_time = start_time
-#         timelapse.start()
-#         time.sleep(0.5)
-#     elif GPIO.input(PIN_UI) == GPIO.LOW:
-#         if active == settings:
-#             make_active(timelapse)
-#             settings.active = False
-#             time.sleep(0.5)
-#         else:
-#             make_active(settings)
-#             timelapse.active = False
-#             time.sleep(0.5)
-#     else:
-        # pass
+@app.route("/", methods=['GET', 'POST'])
+def index():
+
+    form = ReusableForm(request.form)
+
+    # create default values for first landing on page
+
+    if request.method == 'POST':
+
+        # initial form value hecks
+        if form.validate():
+            bulb = request.form['bulb']
+            interval = request.form['interval']
+            number = request.form['number']
+            print bulb, interval, number
+            # results = test_timer(bulb, interval, number)
+            message = "Calculated."
+            print message
+            # timelapse = timelapse.Timelapse(lcd, 5, 10, 10)
+            # timelapse.start_time = time.time()
+            # timelapse.start()
+        else:
+            print form.errors
+            message = "Error"
+        flash(message)
+
+    return render_template('index.html', form=form)
+
+# if __name__ == "__main__":
+#     app.run()
