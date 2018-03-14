@@ -1,5 +1,6 @@
 # run with:
-# export FLASK_APP=website.py
+# source venv/bin/activate
+# export FLASK_APP=pi_lapse.py
 # flask run -h '192.168.10.1'
 # result will be at:
 # http://192.168.10.1:5000/
@@ -14,7 +15,7 @@ import Adafruit_CharLCD as LCD
 DEBUG = True
 app = Flask(__name__)
 app.config.from_object(__name__)
-# app.config['SECRET_KEY'] = '7d441f27d441f27567d411f2b6176a'
+app.config['SECRET_KEY'] = '7d441f27d441f27567d411f2b6176a'
 
 # wiring variables
 LCD_RS = 25
@@ -47,16 +48,16 @@ def index():
 
         # initial form value hecks
         if form.validate():
-            bulb = request.form['bulb']
-            interval = request.form['interval']
-            number = request.form['number']
+            bulb = int(request.form['bulb'])
+            interval = int(request.form['interval'])
+            number = int(request.form['number'])
             print bulb, interval, number
             # results = test_timer(bulb, interval, number)
             message = "Calculated."
             print message
-            # timelapse = timelapse.Timelapse(lcd, 5, 10, 10)
+            timelapse_obj = timelapse.Timelapse(lcd, bulb, interval, number)
             # timelapse.start_time = time.time()
-            # timelapse.start()
+            timelapse_obj.start()
         else:
             print form.errors
             message = "Error"
