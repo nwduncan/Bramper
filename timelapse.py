@@ -54,26 +54,12 @@ class Timelapse(object):
 
     # refresh the lcd display
     def refresh_display(self):
-        self.lcd.clear()
-        # shot count
+        # self.lcd.clear()
+        # shot count & countdown
         self.lcd.set_cursor(0, 0)
-        start_text = "Shots:"
-        end_text = "{}/{}".format(self.number_count, self.number)
+        start_text = "{}/{}".format(self.number_count, self.number)
+        end_text = str(self.interval-self.interval_count-self.bulb) if self.shooting else str(self.interval-self.interval_count)
         self.lcd.message(self.pad(start_text, end_text))
-        # count down (bulb/timer)
-        self.lcd.set_cursor(0, 1)
-        start_text = "Bulb:" if self.shooting else "Next shot:"
-        end_text =  str(self.interval-self.interval_count-self.bulb) if self.shooting else str(self.interval-self.interval_count)
-        self.lcd.message(self.pad(start_text, end_text))
-            # self.lcd.message("{}".format(self.interval-self.interval_count if self.timer is not None else ""))
-            # time remaining
-            # self.lcd.set_cursor(0, 2)
-            # self.lcd.message("{}".format(self.interval-self.interval_count if self.timer is not None else ""))
-            # # progress bar
-            # self.lcd.set_cursor(0, 3)
-            # self.lcd.message("{}".format(self.interval-self.interval_count if self.timer is not None else ""))
-
-
 
     # use threading to keep intervals somewhat correct
     def intervalometer(self):
@@ -113,22 +99,26 @@ class Timelapse(object):
             GPIO.output(self.release_pin, GPIO.HIGH)
             self.bulb_timer.start()
             self.shooting = True
+            self.lcd.set_cursor(0, 1)
+            self.lcd.message(chr(255)*16)
 
     def shutter_close(self):
         GPIO.output(self.release_pin, GPIO.LOW)
         self.shooting = False
+        self.lcd.set_cursor(0, 1)
+        self.lcd.message('-'*16)
 
 
     # stop taking images
     def stop(self):
         self.timer.cancel()
-        print "--- {} seconds ---".format(time.time() - self.start_time)
+        # print "--- {} seconds ---".format(time.time() - self.start_time)
 
 
     def pad(self, start_text, end_text):
         total_length = len(start_text) + len(end_text)
-        if total_length <= 20:
-            return start_text+" "*(20-total_length)+end_text
+        if total_length <= 16:
+            return start_text+" "*(16-total_length)+end_text
         else:
             return "string too long" # replace with a useable solution
 
