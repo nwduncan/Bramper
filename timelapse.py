@@ -1,16 +1,27 @@
 from threading import Timer
 import RPi.GPIO as GPIO
 import time
+import Adafruit_CharLCD as LCD
 
+# wiring variables
+LCD_RS = 25
+LCD_EN = 24
+LCD_D4 = 23
+LCD_D5 = 17
+LCD_D6 = 18
+LCD_D7 = 22
 
+# lcd variables
+LCD_BL = 4
+LCD_COL = 16
+LCD_ROWS = 2
 
 # timelapse display and control
 class Timelapse(object):
 
 
-    def __init__(self, lcd, bulb, interval, number):
+    def __init__(self, bulb, interval, number):
 
-        self.lcd = lcd
         # length of time (s) shutter is to be open
         self.bulb = bulb
         # length of time (s) between shutter opening. this value needs to be > than bulb value
@@ -19,6 +30,9 @@ class Timelapse(object):
         # number of shots to take in total
         self.number = number
         self.number_count = 0
+
+        self.lcd = LCD.Adafruit_CharLCD(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7, LCD_COL, LCD_ROWS, LCD_BL)
+        self.lcd.clear()
 
         # timers
         self.timer = None # intervalometer
@@ -43,23 +57,36 @@ class Timelapse(object):
         print "Started timelapse. Results should take {} seconds".format((self.number-1)*self.interval)
         self.intervalometer()
         self.capture()
-        self.refresh_display()
+        self.refresh_top()
 
 
     # # set screen as active
     # def set_active(self):
     #     self.active = True
-    #     self.refresh_display()
+    #     self.refresh_top()
 
 
     # refresh the lcd display
-    def refresh_display(self):
+    def refresh_top(self):
         # self.lcd.clear()
         # shot count & countdown
         self.lcd.set_cursor(0, 0)
         start_text = "{}/{}".format(self.number_count, self.number)
-        end_text = str(self.interval-self.interval_count-self.bulb) if self.shooting else str(self.interval-self.interval_count)
+        end_text = str(self.interval-(self.interval-self.bulb)-self.interval_count) if self.shooting else str(self.interval-self.interval_count)
         self.lcd.message(self.pad(start_text, end_text))
+        print start_text
+        print end_text
+
+    def refresh_bottom(self):
+        self.lcd.set_cursor(0, 1)
+        if self.shooting:
+            self.lcd.message(chr(255)*16)
+        else:
+            if self.number_count < self.number:
+                self.lcd.message('-'*16)
+            else:
+                self.lcd.message('    complete    ')
+                self.refresh_top()
 
     # use threading to keep intervals somewhat correct
     def intervalometer(self):
@@ -78,7 +105,7 @@ class Timelapse(object):
         if self.interval_count == self.interval:
             self.capture()
 
-        self.refresh_display()
+        self.refresh_top()
 
 
     # take shot
@@ -88,10 +115,6 @@ class Timelapse(object):
             self.number_count += 1
             self.interval_count = 0
 
-            # finished timelapse
-            if self.number_count == self.number:
-                self.stop()
-
 
     def shutter_release(self, length):
         if not self.shooting:
@@ -99,14 +122,16 @@ class Timelapse(object):
             GPIO.output(self.release_pin, GPIO.HIGH)
             self.bulb_timer.start()
             self.shooting = True
-            self.lcd.set_cursor(0, 1)
-            self.lcd.message(chr(255)*16)
+            self.refresh_bottom()
+            print "shot"
+
 
     def shutter_close(self):
         GPIO.output(self.release_pin, GPIO.LOW)
         self.shooting = False
-        self.lcd.set_cursor(0, 1)
-        self.lcd.message('-'*16)
+        self.refresh_bottom()
+        if self.number_count == self.number:
+            self.stop()
 
 
     # stop taking images
